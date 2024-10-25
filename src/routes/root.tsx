@@ -1,5 +1,6 @@
 import { FC } from 'react'
 import styles from './root.module.scss'
+import { Link, Outlet } from 'react-router-dom'
 
 export const Root: FC = () => {
 	return (
@@ -26,16 +27,18 @@ export const Root: FC = () => {
 				<nav>
 					<ul className={styles.ul}>
 						<li>
-							<a href={`/contacts/1`}>Your Name</a>
+							<Link to={`/contacts/1`}>Ваше имя</Link>
 						</li>
 						<li>
-							<a href={`/contacts/2`}>Your Friend</a>
+							<Link to={`/contacts/2`}>Ваш друг</Link>
 						</li>
 					</ul>
 				</nav>
 			</div>
 
-			<div id='detail'></div>
+			<div id='detail'>
+				<Outlet />
+			</div>
 		</div>
 	)
 }
