@@ -2,19 +2,22 @@ import '@/styles/index.scss'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
-import { Root } from './routes/root'
+import { Root, loader as rootLoader, action as rootAction } from './routes/root'
 import { ErrorPage } from './error/error-page'
-import { Contact } from './routes/contact/contact'
+import { Contact, loader as contactLoader } from './routes/contact/contact'
 
 const router = createBrowserRouter([
 	{
 		path: '/',
 		element: <Root />,
+		loader: rootLoader,
+		action: rootAction,
 		errorElement: <ErrorPage />,
 		children: [
 			{
 				path: 'contacts/:contactId',
 				element: <Contact />,
+				loader: contactLoader,
 			},
 		],
 	},

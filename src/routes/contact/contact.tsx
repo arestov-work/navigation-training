@@ -2,6 +2,7 @@ import { FC } from 'react'
 import styles from './contact.module.scss'
 import { Form } from 'react-router-dom'
 import cn from 'classnames'
+import { getContact } from '../../contacts'
 
 type Contact = {
 	id: string
@@ -13,14 +14,46 @@ type Contact = {
 	favorite: boolean
 }
 
+type LoaderParams = {
+	params: {
+		contactId: string
+	}
+}
+
+let contacts: Contact[] = []
+
+export async function loader({ params }) {
+	const contact = await getContact(params.contactId)
+	return { contact }
+}
+
+export async function getContacts(): Promise<Contact[]> {
+	return contacts
+}
+
+export async function createContact(): Promise<Contact> {
+	const newContact: Contact = {
+		id: String(Date.now()),
+		first: '',
+		last: '',
+		avatar: '',
+		twitter: '',
+		notes: '',
+		favorite: false,
+	}
+
+	contacts.push(newContact)
+	return newContact
+}
+
 export const Contact: FC = () => {
 	const contact: Contact = {
-		id: '1',
+		id: String(Date.now()),
 		first: 'Иванов',
 		last: 'Иван',
-		avatar: 'https://robohash.org/you.png?size=200x200',
-		twitter: 'Нет twitter',
-		notes: 'Несколько заметок',
+		avatar: `https://robohash.org/${String(Date.now())}.png?size=200x200`,
+		twitter: 'twitter',
+		notes: 'Маленькое описание',
 		favorite: true,
 	}
 

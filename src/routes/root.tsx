@@ -1,8 +1,31 @@
 import { FC } from 'react'
 import styles from './root.module.scss'
-import { Link, Outlet } from 'react-router-dom'
+import { Link, Outlet, useLoaderData, Form } from 'react-router-dom'
+import { getContacts, createContact } from './contact/contact'
+
+type Contact = {
+	id: string
+	first: string
+	last: string
+	avatar: string
+	twitter: string
+	notes: string
+	favorite: boolean
+}
+
+export async function loader() {
+	const contacts = await getContacts()
+	return { contacts }
+}
+
+export async function action() {
+	const contact = await createContact()
+	return { contact }
+}
 
 export const Root: FC = () => {
+	const { contacts } = useLoaderData() as { contacts: Contact[] }
+
 	return (
 		<div className={styles.container}>
 			<div className={styles.wrapper} id='sidebar'>
@@ -19,20 +42,34 @@ export const Root: FC = () => {
 						<div id='search-spinner' aria-hidden hidden={true} />
 						<div className='sr-only' aria-live='polite'></div>
 					</form>
-					<form className={styles.formButton} method='post'>
+					<Form className={styles.formButton} method='post'>
 						<button type='submit'>New</button>
-					</form>
+					</Form>
 				</div>
 
 				<nav>
-					<ul className={styles.ul}>
-						<li>
-							<Link to={`/contacts/1`}>Ваше имя</Link>
-						</li>
-						<li>
-							<Link to={`/contacts/2`}>Ваш друг</Link>
-						</li>
-					</ul>
+					{contacts.length ? (
+						<ul className={styles.ul}>
+							{contacts.map((contact: any) => (
+								<li key={contact.id}>
+									<Link to={`contacts/${contact.id}`}>
+										{contact.first || contact.last ? (
+											<>
+												{contact.first} {contact.last}
+											</>
+										) : (
+											<i>Нет имени</i>
+										)}{' '}
+										{contact.favorite && <span>★</span>}
+									</Link>
+								</li>
+							))}
+						</ul>
+					) : (
+						<p className={styles.text}>
+							<i>Нет контактов</i>
+						</p>
+					)}
 				</nav>
 			</div>
 
