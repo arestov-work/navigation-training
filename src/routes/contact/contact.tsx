@@ -1,6 +1,6 @@
 import { FC } from 'react'
 import styles from './contact.module.scss'
-import { Form } from 'react-router-dom'
+import { Form, LoaderFunctionArgs, useLoaderData } from 'react-router-dom'
 import cn from 'classnames'
 import { getContact } from '../../contacts'
 
@@ -14,49 +14,13 @@ type Contact = {
 	favorite: boolean
 }
 
-type LoaderParams = {
-	params: {
-		contactId: string
-	}
-}
-
-let contacts: Contact[] = []
-
-export async function loader({ params }) {
-	const contact = await getContact(params.contactId)
+export async function loader({ params }: LoaderFunctionArgs) {
+	const contact = await getContact(params.contactId as string)
 	return { contact }
 }
 
-export async function getContacts(): Promise<Contact[]> {
-	return contacts
-}
-
-export async function createContact(): Promise<Contact> {
-	const newContact: Contact = {
-		id: String(Date.now()),
-		first: '',
-		last: '',
-		avatar: '',
-		twitter: '',
-		notes: '',
-		favorite: false,
-	}
-
-	contacts.push(newContact)
-	return newContact
-}
-
 export const Contact: FC = () => {
-	const contact: Contact = {
-		id: String(Date.now()),
-		first: 'Иванов',
-		last: 'Иван',
-		avatar: `https://robohash.org/${String(Date.now())}.png?size=200x200`,
-		twitter: 'twitter',
-		notes: 'Маленькое описание',
-		favorite: true,
-	}
-
+	const { contact } = useLoaderData() as { contact: Contact }
 	const { id, first, last, avatar, twitter, notes, favorite } = contact
 
 	return (

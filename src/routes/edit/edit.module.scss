@@ -1,0 +1,66 @@
+.wrapper {
+	padding: 120px;
+	width: 100%;
+	display: grid;
+	align-items: baseline;
+	grid-template-columns: 200px 1fr;
+	row-gap: 24px;
+}
+
+.title {
+	font-family: 'Courier New', Courier, monospace;
+	font-size: 24px;
+	color: black;
+}
+
+.label {
+	display: flex;
+	align-items: center;
+	column-gap: 24px;
+}
+
+.input {
+	border: 1px solid transparent;
+	border-radius: 12px;
+	width: 100%;
+	padding: 12px;
+	transition: ease border-color 0.5s;
+
+	&:focus {
+		outline: none;
+		border-color: blue;
+	}
+
+	&::placeholder {
+		font-family: 'Courier New', Courier, monospace;
+		font-size: 18px;
+	}
+}
+
+.textarea {
+	height: 200px;
+}
+
+.wrapper-btn {
+	display: flex;
+	column-gap: 24px;
+}
+
+.button {
+	font-family: 'Courier New', Courier, monospace;
+	font-size: 20px;
+	border: 1px solid transparent;
+	padding: 12px;
+	border-radius: 12px;
+	cursor: pointer;
+	color: black;
+	transition: ease border-color 0.5s;
+
+	&--save {
+		color: rgb(0, 0, 255);
+	}
+
+	&:hover {
+		border-color: rgb(0, 76, 255);
+	}
+}

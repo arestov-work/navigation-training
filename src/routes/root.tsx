@@ -1,7 +1,15 @@
 import { FC } from 'react'
 import styles from './root.module.scss'
-import { Link, Outlet, useLoaderData, Form } from 'react-router-dom'
-import { getContacts, createContact } from './contact/contact'
+import {
+	Outlet,
+	useLoaderData,
+	Form,
+	redirect,
+	NavLink,
+	useNavigation,
+} from 'react-router-dom'
+import { getContacts, createContact } from '../contacts'
+import cn from 'classnames'
 
 type Contact = {
 	id: string
@@ -20,16 +28,19 @@ export async function loader() {
 
 export async function action() {
 	const contact = await createContact()
-	return { contact }
+	return redirect(`/contacts/${contact.id}/edit`)
 }
 
 export const Root: FC = () => {
 	const { contacts } = useLoaderData() as { contacts: Contact[] }
+	const navigation = useNavigation()
 
 	return (
 		<div className={styles.container}>
 			<div className={styles.wrapper} id='sidebar'>
-				<h1 className={styles.title}>React Router Contacts</h1>
+				<a href='/' className={styles.title}>
+					React Router Contacts
+				</a>
 				<div className={styles.search}>
 					<form className={styles.searchForm} id='search-form' role='search'>
 						<input
@@ -52,16 +63,24 @@ export const Root: FC = () => {
 						<ul className={styles.ul}>
 							{contacts.map((contact: any) => (
 								<li key={contact.id}>
-									<Link to={`contacts/${contact.id}`}>
+									<NavLink
+										to={`contacts/${contact.id}`}
+										className={({ isActive, isPending }) =>
+											cn(styles.link, {
+												[styles.linkActive]: isActive,
+												[styles.linkPending]: isPending,
+											})
+										}
+									>
 										{contact.first || contact.last ? (
 											<>
 												{contact.first} {contact.last}
 											</>
 										) : (
-											<i>Нет имени</i>
+											<i>Новая запись</i>
 										)}{' '}
 										{contact.favorite && <span>★</span>}
-									</Link>
+									</NavLink>
 								</li>
 							))}
 						</ul>
@@ -73,7 +92,12 @@ export const Root: FC = () => {
 				</nav>
 			</div>
 
-			<div id='detail'>
+			<div
+				className={cn(styles.detail, {
+					[styles.detailLoading]: navigation.state === 'loading',
+				})}
+				id='detail'
+			>
 				<Outlet />
 			</div>
 		</div>
