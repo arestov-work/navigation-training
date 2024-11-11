@@ -1,4 +1,4 @@
-import { FC } from 'react'
+import { FC, useEffect } from 'react'
 import styles from './root.module.scss'
 import {
 	Outlet,
@@ -7,6 +7,8 @@ import {
 	redirect,
 	NavLink,
 	useNavigation,
+	Link,
+	LoaderFunctionArgs,
 } from 'react-router-dom'
 import { getContacts, createContact } from '../contacts'
 import cn from 'classnames'
@@ -21,40 +23,52 @@ type Contact = {
 	favorite: boolean
 }
 
-export async function loader() {
-	const contacts = await getContacts()
-	return { contacts }
+export const loader = async ({ request }: LoaderFunctionArgs) => {
+	const url = new URL(request.url)
+	const search = url.searchParams.get('search') || ''
+	const contacts = await getContacts(search)
+	return { contacts, search }
 }
 
-export async function action() {
+export const action = async () => {
 	const contact = await createContact()
 	return redirect(`/contacts/${contact.id}/edit`)
 }
 
 export const Root: FC = () => {
-	const { contacts } = useLoaderData() as { contacts: Contact[] }
+	const { contacts, search } = useLoaderData() as {
+		contacts: Contact[]
+		search: string
+	}
 	const navigation = useNavigation()
+
+	useEffect(() => {
+		const searchInput = document.getElementById(
+			'search'
+		) as HTMLInputElement | null
+		searchInput && (searchInput.value = search)
+	}, [search])
 
 	return (
 		<div className={styles.container}>
 			<div className={styles.wrapper} id='sidebar'>
-				<a href='/' className={styles.title}>
+				<Link to='/' className={styles.title}>
 					React Router Contacts
-				</a>
+				</Link>
 				<div className={styles.search}>
-					<form className={styles.searchForm} id='search-form' role='search'>
+					<Form className={styles.searchForm} id='search-form' role='search'>
 						<input
-							id='q'
-							aria-label='Search contacts'
-							placeholder='Search'
+							id='search'
+							placeholder='Поиск'
 							type='search'
-							name='q'
+							name='search'
+							defaultValue={search}
 						/>
 						<div id='search-spinner' aria-hidden hidden={true} />
 						<div className='sr-only' aria-live='polite'></div>
-					</form>
+					</Form>
 					<Form className={styles.formButton} method='post'>
-						<button type='submit'>New</button>
+						<button type='submit'>Новый</button>
 					</Form>
 				</div>
 

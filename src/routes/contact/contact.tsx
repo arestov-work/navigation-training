@@ -14,7 +14,7 @@ type Contact = {
 	favorite: boolean
 }
 
-export async function loader({ params }: LoaderFunctionArgs) {
+export const loader = async ({ params }: LoaderFunctionArgs) => {
 	const contact = await getContact(params.contactId as string)
 	return { contact }
 }

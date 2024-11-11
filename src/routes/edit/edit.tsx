@@ -1,6 +1,12 @@
 import styles from './edit.module.scss'
 import { FC } from 'react'
-import { Form, useLoaderData, redirect, ActionFunction } from 'react-router-dom'
+import {
+	Form,
+	useLoaderData,
+	redirect,
+	ActionFunction,
+	useNavigate,
+} from 'react-router-dom'
 import cn from 'classnames'
 import { updateContact } from '../../contacts'
 
@@ -23,6 +29,7 @@ export const action: ActionFunction = async ({ request, params }) => {
 
 export const Edit: FC = () => {
 	const { contact } = useLoaderData() as { contact: Contact }
+	const navigate = useNavigate()
 
 	return (
 		<Form method='post' className={styles.wrapper}>
@@ -83,7 +90,7 @@ export const Edit: FC = () => {
 				<button
 					className={styles.button}
 					type='button'
-					onClick={() => window.history.back()}
+					onClick={() => navigate(-1)}
 				>
 					Отменить
 				</button>
