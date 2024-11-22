@@ -1,8 +1,14 @@
 import { FC } from 'react'
 import styles from './contact.module.scss'
-import { Form, LoaderFunctionArgs, useLoaderData } from 'react-router-dom'
+import {
+	ActionFunctionArgs,
+	Form,
+	LoaderFunctionArgs,
+	useFetcher,
+	useLoaderData,
+} from 'react-router-dom'
 import cn from 'classnames'
-import { getContact } from '../../contacts'
+import { getContact, updateContact } from '../../contacts'
 
 type Contact = {
 	id: string
@@ -16,7 +22,25 @@ type Contact = {
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
 	const contact = await getContact(params.contactId as string)
+	if (!contact) {
+		throw new Response('', {
+			status: 404,
+			statusText: 'Not Found',
+		})
+	}
+
 	return { contact }
+}
+
+export const action = async ({ request, params }: ActionFunctionArgs) => {
+	const formData = await request.formData()
+
+	return updateContact(
+		params.contactId as string,
+		{
+			favorite: formData.get('favorite') === 'true',
+		} as Partial<Contact>
+	)
 }
 
 export const Contact: FC = () => {
@@ -42,7 +66,7 @@ export const Contact: FC = () => {
 					) : (
 						'Неизвестный тип'
 					)}
-					<Favorite contact={favorite} />
+					<Favorite favorite={favorite} />
 				</h1>
 
 				{twitter && (
@@ -87,12 +111,18 @@ export const Contact: FC = () => {
 	)
 }
 
-const Favorite = ({ contact }: { contact: boolean }) => {
+const Favorite = ({ favorite }: { favorite: boolean }) => {
+	const fetcher = useFetcher()
+	const favorites = fetcher.formData
+		? fetcher.formData.get('favorite') === 'true'
+		: favorite
+
 	return (
-		<Form className={styles.buttonForm} method='post'>
-			<button name='favorite' value={contact ? 'false' : 'true'}>
-				{contact ? '★' : '☆'}
+		<fetcher.Form className={styles.buttonForm} method='post'>
+			<button name='favorite' value={favorite ? 'false' : 'true'}>
+				{/* {fetcher.state === 'loading' ? '⏳ ...' : favorite ? '★' : '☆'} */}
+				{favorites ? '★' : '☆'}
 			</button>
-		</Form>
+		</fetcher.Form>
 	)
 }

@@ -9,6 +9,7 @@ import {
 	useNavigation,
 	Link,
 	LoaderFunctionArgs,
+	useSubmit,
 } from 'react-router-dom'
 import { getContacts, createContact } from '../contacts'
 import cn from 'classnames'
@@ -41,6 +42,11 @@ export const Root: FC = () => {
 		search: string
 	}
 	const navigation = useNavigation()
+	const submit = useSubmit()
+
+	const searching =
+		navigation.location &&
+		new URLSearchParams(navigation.location.search).has('search')
 
 	useEffect(() => {
 		const searchInput = document.getElementById(
@@ -58,13 +64,24 @@ export const Root: FC = () => {
 				<div className={styles.search}>
 					<Form className={styles.searchForm} id='search-form' role='search'>
 						<input
+							className={styles.input}
 							id='search'
 							placeholder='Поиск'
 							type='search'
 							name='search'
 							defaultValue={search}
+							onChange={(event) => {
+								const isFirstSearch = search === null
+								submit(event.currentTarget.form, { replace: !isFirstSearch })
+							}}
 						/>
-						<div id='search-spinner' aria-hidden hidden={true} />
+						<div
+							className={styles.searchSpinner}
+							aria-hidden
+							hidden={!searching}
+						>
+							<div className={styles.searchSpinnerLoad}></div>
+						</div>
 						<div className='sr-only' aria-live='polite'></div>
 					</Form>
 					<Form className={styles.formButton} method='post'>

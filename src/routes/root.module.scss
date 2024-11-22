@@ -36,14 +36,30 @@
 }
 
 .search-form {
+	position: relative;
 	width: 100%;
+}
 
-	& input {
-		padding: 12px;
-		border-radius: 12px;
-		border: none;
-		width: 100%;
-	}
+.input {
+	padding: 12px;
+	border-radius: 12px;
+	border: none;
+	width: 100%;
+}
+
+.search-spinner {
+	position: absolute;
+	left: 0;
+	bottom: -16px;
+	width: 100%;
+	height: 12px;
+	border-radius: 12px;
+	overflow: hidden;
+}
+.search-spinner-load {
+	height: 100%;
+	background-color: rgb(59, 153, 51);
+	animation: moves ease 1s infinite;
 }
 
 .form-button {
@@ -108,5 +124,19 @@
 
 	&:not(&--active):hover {
 		border-color: rgb(0, 47, 255);
+	}
+}
+
+@keyframes moves {
+	0% {
+		width: 0;
+	}
+
+	50% {
+		width: 100%;
+	}
+
+	100% {
+		width: 0;
 	}
 }
